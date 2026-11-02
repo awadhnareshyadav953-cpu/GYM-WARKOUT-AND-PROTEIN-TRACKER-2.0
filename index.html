@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GYMFIT - Workout & Protein Tracker</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #101820;
+    color: white;
+    line-height: 1.6;
+}
+
+header {
+    background: #17232e;
+    padding: 25px 15px;
+    text-align: center;
+    border-bottom: 3px solid #21d07a;
+}
+
+header h1 {
+    color: #21d07a;
+    font-size: 32px;
+}
+
+header p {
+    color: #cbd5df;
+    margin-top: 5px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 15px;
+}
+
+.card {
+    background: #1b2935;
+    padding: 25px;
+    margin-bottom: 22px;
+    border-radius: 14px;
+    border: 1px solid #344653;
+}
+
+h2 {
+    color: #21d07a;
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    margin: 14px 0 6px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 7px;
+    border: 1px solid #60717d;
+    background: #101820;
+    color: white;
+    font-size: 16px;
+}
+
+.meal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 8px;
+    background: #21d07a;
+    color: #101820;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #16b968;
+}
+
+.reset-btn {
+    background: #344653;
+    color: white;
+    margin-top: 10px;
+}
+
+.reset-btn:hover {
+    background: #435866;
+}
+
+#routineDetails {
+    background: #101820;
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 8px;
+    color: #d6e2e9;
+}
+
+#result {
+    display: none;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.result-box {
+    background: #101820;
+    padding: 18px 10px;
+    border-radius: 9px;
+    text-align: center;
+}
+
+.result-box h3 {
+    color: #21d07a;
+    font-size: 24px;
+}
+
+.result-box p {
+    color: #cbd5df;
+    font-size: 13px;
+}
+
+.progress-bg {
+    background: #344653;
+    height: 17px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+#progressBar {
+    width: 0%;
+    height: 100%;
+    background: #21d07a;
+    transition: width 0.4s;
+}
+
+#message {
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+footer {
+    text-align: center;
+    padding: 22px;
+    color: #aab8c2;
+}
+
+@media(max-width: 600px) {
+    .meal-grid, .results-grid {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    .card {
+        padding: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>GYMFIT</h1>
+    <p>Workout Routine & Protein Intake Tracker</p>
+</header>
+
+<div class="container">
+
+    <section class="card">
+        <h2>1. Personal Information</h2>
+
+        <label for="name">Your Name</label>
+        <input type="text" id="name" placeholder="Enter your name">
+
+        <label for="weight">Body Weight (kg)</label>
+        <input type="number" id="weight" min="1" max="500"
+               placeholder="Example: 65">
+
+        <label for="duration">Workout Duration (minutes)</label>
+        <input type="number" id="duration" min="1" max="600"
+               placeholder="Example: 60">
+    </section>
+
+    <section class="card">
+        <h2>2. Select Your Workout</h2>
+
+        <label for="workout">Choose Workout Routine</label>
+        <select id="workout" onchange="showRoutine()">
+            <option value="">-- Select Workout --</option>
+            <option value="chest">Chest & Triceps</option>
+            <option value="back">Back & Biceps</option>
+            <option value="legs">Legs & Abs</option>
+            <option value="shoulders">Shoulders & Core</option>
+            <option value="full">Full Body</option>
+        </select>
+
+        <div id="routineDetails">
+            Select a workout to see your exercise plan.
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>3. Daily Protein Intake</h2>
+
+        <label for="rate">Choose Protein Guide (grams per kg)</label>
+        <select id="rate">
+            <option value="1.2">1.2 g/kg - Lower example target</option>
+            <option value="1.6" selected>1.6 g/kg - Middle example target</option>
+            <option value="2.0">2.0 g/kg - Higher example target</option>
+        </select>
+
+        <p style="color:#bdcbd4; margin-top:8px; font-size:13px;">
+            Enter the estimated protein you consumed in each meal.
+        </p>
+
+        <div class="meal-grid">
+            <div>
+                <label for="breakfast">Breakfast (grams)</label>
+                <input type="number" id="breakfast" min="0"
+                       placeholder="Example: 20">
+            </div>
+
+            <div>
+                <label for="lunch">Lunch (grams)</label>
+                <input type="number" id="lunch" min="0"
+                       placeholder="Example: 30">
+            </div>
+
+            <div>
+                <label for="dinner">Dinner (grams)</label>
+                <input type="number" id="dinner" min="0"
+                       placeholder="Example: 25">
+            </div>
+
+            <div>
+                <label for="postworkout">Post-workout (grams)</label>
+                <input type="number" id="postworkout" min="0"
+                       placeholder="Example: 20">
+            </div>
+        </div>
+
+        <button onclick="calculateResults()">Calculate My Results</button>
+        <button class="reset-btn" onclick="resetTracker()">Reset All</button>
+    </section>
+
+    <section class="card" id="result">
+        <h2>4. Your Fitness Report</h2>
+
+        <p id="greeting"></p>
+
+        <div class="results-grid">
+            <div class="result-box">
+                <h3 id="target">0 g</h3>
+                <p>Daily Protein Guide</p>
+            </div>
+
+            <div class="result-box">
+                <h3 id="consumed">0 g</h3>
+                <p>Protein Consumed</p>
+            </div>
+
+            <div class="result-box">
+                <h3 id="remaining">0 g</h3>
+                <p>Still Needed</p>
+            </div>
+        </div>
+
+        <h3>Daily Protein Progress</h3>
+        <div class="progress-bg">
+            <div id="progressBar"></div>
+        </div>
+
+        <p id="progressText">0% completed</p>
+        <p id="message"></p>
+
+        <div id="mealSummary" style="margin-top:18px;"></div>
+    </section>
+
+</div>
+
+<footer>
+    <p>GYMFIT | Workout & Protein Intake Tracker</p>
+    <p>Student Mini Project</p>
+</footer>
+
+<script>
+const routines = {
+    chest: {
+        title: "Chest & Triceps",
+        exercises: [
+            "Push-ups - 3 sets",
+            "Bench Press - 3 sets",
+            "Incline Dumbbell Press - 3 sets",
+            "Triceps Pushdown - 3 sets"
+        ]
+    },
+    back: {
+        title: "Back & Biceps",
+        exercises: [
+            "Lat Pulldown - 3 sets",
+            "Seated Cable Row - 3 sets",
+            "Dumbbell Curl - 3 sets",
+            "Hammer Curl - 3 sets"
+        ]
+    },
+    legs: {
+        title: "Legs & Abs",
+        exercises: [
+            "Squats - 3 sets",
+            "Leg Press - 3 sets",
+            "Lunges - 3 sets",
+            "Plank - 3 rounds"
+        ]
+    },
+    shoulders: {
+        title: "Shoulders & Core",
+        exercises: [
+            "Shoulder Press - 3 sets",
+            "Lateral Raises - 3 sets",
+            "Front Raises - 3 sets",
+            "Crunches - 3 sets"
+        ]
+    },
+    full: {
+        title: "Full Body",
+        exercises: [
+            "Squats - 3 sets",
+            "Push-ups - 3 sets",
+            "Lat Pulldown - 3 sets",
+            "Shoulder Press - 3 sets"
+        ]
+    }
+};
+
+function showRoutine() {
+    const choice = document.getElementById("workout").value;
+    const details = document.getElementById("routineDetails");
+
+    if (!choice) {
+        details.textContent = "Select a workout to see your exercise plan.";
+        return;
+    }
+
+    const routine = routines[choice];
+
+    details.innerHTML =
+        "<strong>" + routine.title + "</strong><ul>" +
+        routine.exercises.map(exercise => "<li>" + exercise + "</li>").join("") +
+        "</ul>";
+}
+
+function calculateResults() {
+    const name = document.getElementById("name").value.trim();
+    const weight = Number(document.getElementById("weight").value);
+    const duration = Number(document.getElementById("duration").value);
+    const workout = document.getElementById("workout").value;
+    const rate = Number(document.getElementById("rate").value);
+
+    const mealIds = ["breakfast", "lunch", "dinner", "postworkout"];
+    const mealNames = ["Breakfast", "Lunch", "Dinner", "Post-workout"];
+
+    if (!name) {
+        alert("Please enter your name.");
+        return;
+    }
+
+    if (!Number.isFinite(weight) || weight <= 0 || weight > 500) {
+        alert("Please enter a valid body weight.");
+        return;
+    }
+
+    if (!Number.isFinite(duration) || duration <= 0 || duration > 600) {
+        alert("Please enter a valid workout duration.");
+        return;
+    }
+
+    if (!workout) {
+        alert("Please select a workout routine.");
+        return;
+    }
+
+    const mealValues = [];
+
+    for (const id of mealIds) {
+        const field = document.getElementById(id);
+        const value = Number(field.value);
+
+        if (field.value.trim() === "" || !Number.isFinite(value) || value < 0) {
+            alert("Please enter a valid non-negative protein amount for every meal.");
+            return;
+        }
+
+        mealValues.push(value);
+    }
+
+    const target = weight * rate;
+    const total = mealValues.reduce((sum, value) => sum + value, 0);
+    const remaining = Math.max(0, target - total);
+    const percentage = Math.min(100, (total / target) * 100);
+
+    document.getElementById("greeting").textContent =
+        "Great work, " + name + "! Here is your fitness report.";
+
+    document.getElementById("target").textContent =
+        target.toFixed(1) + " g";
+
+    document.getElementById("consumed").textContent =
+        total.toFixed(1) + " g";
+
+    document.getElementById("remaining").textContent =
+        remaining.toFixed(1) + " g";
+
+    document.getElementById("progressBar").style.width =
+        percentage + "%";
+
+    document.getElementById("progressText").textContent =
+        percentage.toFixed(1) + "% of your example target";
+
+    const message = document.getElementById("message");
+
+    if (total >= target) {
+        message.textContent = "Your selected protein guide has been reached!";
+    } else {
+        message.textContent =
+            "You need approximately " + remaining.toFixed(1) +
+            " g more to reach your selected guide.";
+    }
+
+    let summary = "<h3>Meal-wise Protein Report</h3><ul>";
+
+    mealNames.forEach((meal, index) => {
+        summary += "<li>" + meal + ": " +
+            mealValues[index].toFixed(1) + " g</li>";
+    });
+
+    summary += "</ul>";
+    summary += "<p><strong>Workout:</strong> " +
+        routines[workout].title + "</p>";
+    summary += "<p><strong>Duration:</strong> " +
+        duration + " minutes</p>";
+
+    document.getElementById("mealSummary").innerHTML = summary;
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("result").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+function resetTracker() {
+    document.getElementById("name").value = "";
+    document.getElementById("weight").value = "";
+    document.getElementById("duration").value = "";
+    document.getElementById("workout").value = "";
+    document.getElementById("rate").value = "1.6";
+
+    ["breakfast", "lunch", "dinner", "postworkout"].forEach(id => {
+        document.getElementById(id).value = "";
+    });
+
+    document.getElementById("routineDetails").textContent =
+        "Select a workout to see your exercise plan.";
+
+    document.getElementById("result").style.display = "none";
+}
+</script>
+
+</body>
+</html>
